@@ -1,24 +1,36 @@
-import { VinylCard } from '@/features/catalog/components/VinylCard';
-import { ALBUMS_MOCK } from '@/features/catalog/api/catalog.mock';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { AppRoutes } from './routes/app.routes';
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-6 sm:p-12 gap-10">
-      <header className="text-center space-y-2">
-        <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-teal-400 to-blue-500 bg-clip-text text-transparent">
-          VinylPedia UI Test
-        </h1>
-        <p className="text-slate-400 text-sm max-w-sm mx-auto">
-          Pasa el cursor sobre cualquiera de las portadas para desplegar el vinilo.
-        </p>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+      {/* Navbar Global */}
+      <header className="border-b border-slate-800 p-4 flex justify-between items-center max-w-5xl w-full mx-auto">
+        <nav className="flex gap-6 font-medium text-sm">
+          <Link to="/" className="text-teal-400 hover:text-teal-300 transition-colors">
+            Catálogo
+          </Link>
+          <Link to="/collection" className="text-teal-400 hover:text-teal-300 transition-colors">
+            Mi Colección
+          </Link>
+        </nav>
+        <button
+          onClick={() => setIsAuthenticated(!isAuthenticated)}
+          className="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded text-slate-300 transition-colors border border-slate-700"
+        >
+          {isAuthenticated
+            ? 'Estado: Autenticado (Cerrar Sesión)'
+            : 'Estado: Visitante (Simular Login)'}
+        </button>
       </header>
 
-      {/* Grid / Layout con espaciado seguro en desktop y mobile */}
-      <section className="flex flex-col md:flex-row flex-wrap items-center justify-center gap-16 md:gap-28 py-4">
-        {ALBUMS_MOCK.map((album) => (
-          <VinylCard key={album.id} album={album} />
-        ))}
-      </section>
-    </main>
+      {/* Vistas según URL */}
+      <main className="flex-1 max-w-5xl w-full mx-auto p-6">
+        <AppRoutes isAuthenticated={isAuthenticated} />
+      </main>
+    </div>
   );
 }
