@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import { CatalogPage } from '@/features/catalog/pages/CatalogPage';
+import { HomePage } from '@/features/catalog/pages/HomePage';
 import { NotFoundPage } from '@/components/feedback/NotFoundPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { CollectionPage } from '@/features/catalog/pages/CollectionPage';
@@ -12,7 +12,7 @@ export function AppRoutes({ isAuthenticated }: AppRoutesProps) {
   return (
     <Routes>
       {/* RUTA PÚBLICA */}
-      <Route path="/" element={<CatalogPage />} />
+      <Route path="/" element={<HomePage />} />
 
       {/* RUTAS PRIVADAS (Anidadas bajo el guardián ProtectedRoute) */}
       <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
