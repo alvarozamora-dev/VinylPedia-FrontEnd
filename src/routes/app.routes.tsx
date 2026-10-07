@@ -3,6 +3,7 @@ import { HomePage } from '@/features/catalog/pages/HomePage';
 import { NotFoundPage } from '@/components/feedback/NotFoundPage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { CollectionPage } from '@/features/catalog/pages/CollectionPage';
+import { VinylDetailPage } from '@/features/catalog/pages/VinylDetailPage';
 
 interface AppRoutesProps {
   isAuthenticated: boolean;
@@ -13,6 +14,7 @@ export function AppRoutes({ isAuthenticated }: AppRoutesProps) {
     <Routes>
       {/* RUTA PÚBLICA */}
       <Route path="/" element={<HomePage />} />
+      <Route path="/vinyl/:id" element={<VinylDetailPage />} />
 
       {/* RUTAS PRIVADAS (Anidadas bajo el guardián ProtectedRoute) */}
       <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
