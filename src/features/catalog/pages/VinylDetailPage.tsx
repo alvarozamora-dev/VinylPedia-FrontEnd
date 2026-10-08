@@ -2,10 +2,12 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getAlbumById } from '../api/catalog.mock';
 import { Button } from '@/components/ui/button';
 import { TracklistSection } from '../components/TracklistSection';
+import { useCollection } from '@/features/collection/useCollection';
 
 export function VinylDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { addToCollection, removeFromCollection, isInCollection } = useCollection();
 
   const album = id ? getAlbumById(id) : undefined;
 
@@ -23,9 +25,18 @@ export function VinylDetailPage() {
     );
   }
 
+  const inCollection = isInCollection(album.id);
+
+  const handleToggleCollection = () => {
+    if (inCollection) {
+      removeFromCollection(album.id);
+    } else {
+      addToCollection(album);
+    }
+  };
+
   return (
     <div className="space-y-8 max-w-4xl mx-auto py-6 px-4">
-      {/* Enlace para volver */}
       <Link
         to="/"
         className="inline-flex items-center text-xs font-medium text-slate-400 hover:text-teal-400 transition-colors"
@@ -33,9 +44,7 @@ export function VinylDetailPage() {
         ← Volver al catálogo
       </Link>
 
-      {/* Sección principal del detalle */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-        {/* Carátula e interacción visual */}
         <div className="relative aspect-square rounded-2xl overflow-hidden border border-slate-800 bg-slate-900 shadow-2xl group">
           <img
             src={album.coverUrl}
@@ -44,7 +53,6 @@ export function VinylDetailPage() {
           />
         </div>
 
-        {/* Informaciones del álbum */}
         <div className="space-y-6">
           <div>
             <span className="inline-block px-2.5 py-1 text-[10px] font-semibold tracking-wider text-teal-400 uppercase bg-teal-950/60 border border-teal-800/50 rounded-full mb-3">
@@ -54,7 +62,6 @@ export function VinylDetailPage() {
             <p className="text-lg font-medium text-slate-400 mt-1">{album.artist}</p>
           </div>
 
-          {/* Especificaciones técnicas */}
           <div className="grid grid-cols-3 gap-4 text-sm text-slate-400 border-y border-slate-800/80 py-4">
             <div>
               <span className="block text-xs text-slate-500">Año</span>
@@ -72,14 +79,20 @@ export function VinylDetailPage() {
             </div>
           </div>
 
-          {/* Botón de acción */}
-          <Button className="w-full bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold py-3 rounded-xl transition-all shadow-lg shadow-teal-500/10">
-            + Agregar a Mi Estantería
+          {/* Botón dinámico según el estado de la colección */}
+          <Button
+            onClick={handleToggleCollection}
+            className={`w-full font-bold py-3 rounded-xl transition-all shadow-lg ${
+              inCollection
+                ? 'bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800/50 shadow-rose-950/20'
+                : 'bg-teal-500 hover:bg-teal-400 text-slate-950 shadow-teal-500/10'
+            }`}
+          >
+            {inCollection ? '✓ En tu Estantería (Quitar)' : '+ Agregar a Mi Estantería'}
           </Button>
         </div>
       </div>
 
-      {/* Sección del Tracklist */}
       <TracklistSection tracks={album.tracklist} />
     </div>
   );
