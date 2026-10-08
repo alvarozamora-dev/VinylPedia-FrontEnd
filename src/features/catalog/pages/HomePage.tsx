@@ -1,70 +1,40 @@
-import { useState, useMemo } from 'react';
+import { useCatalogFilters } from '../hooks/useCatalogFilters';
+import { GenreFilter } from '../components/GenreFilter';
 import { VinylCard } from '../components/VinylCard';
-import { CatalogFilters } from '../components/CatalogFilters';
 import { ALBUMS_MOCK } from '../api/catalog.mock';
+import { SearchBar } from '../components/SearchBar';
 
 export function HomePage() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedGenre, setSelectedGenre] = useState('ALL');
-
-  // Obtener géneros únicos dinámicamente desde la lista de álbumes
-  const genres = useMemo(() => {
-    const allGenres = ALBUMS_MOCK.map((album) => album.genre);
-    return Array.from(new Set(allGenres));
-  }, []);
-
-  // Filtrar álbumes en tiempo real según búsqueda y género
-  const filteredAlbums = useMemo(() => {
-    return ALBUMS_MOCK.filter((album) => {
-      const matchesSearch =
-        album.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        album.artist.toLowerCase().includes(searchTerm.toLowerCase());
-
-      const matchesGenre = selectedGenre === 'ALL' || album.genre === selectedGenre;
-
-      return matchesSearch && matchesGenre;
-    });
-  }, [searchTerm, selectedGenre]);
+  const { searchQuery, setSearchQuery, selectedGenre, setSelectedGenre, filteredAlbums } =
+    useCatalogFilters(ALBUMS_MOCK);
 
   return (
-    <div className="space-y-10">
-      {/* Header e Introducción */}
-      <header className="text-center space-y-3">
+    <div className="space-y-6 max-w-6xl mx-auto py-6 px-4">
+      <div className="space-y-4">
+        <h1 className="text-3xl font-extrabold text-slate-100">Catálogo de Vinilos</h1>
+
         {/* Controles de Filtro */}
-        <CatalogFilters
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          selectedGenre={selectedGenre}
-          onGenreChange={setSelectedGenre}
-          genres={genres}
-        />
-
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-teal-400 to-blue-500 bg-clip-text text-transparent">
-          VinylPedia
-        </h1>
-        <p className="text-slate-400 text-sm max-w-md mx-auto">
-          Explora la colección pública de acetatos, filtra tus géneros favoritos y gestiona tu
-          estantería.
-        </p>
-      </header>
-
-      {/* Grid Responsivo de Vinilos */}
-      <section className="min-h-[300px]">
-        {filteredAlbums.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center py-4">
-            {filteredAlbums.map((album) => (
-              <VinylCard key={album.id} album={album} />
-            ))}
+        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+          <div className="w-full md:w-72">
+            <SearchBar value={searchQuery} onChange={setSearchQuery} />
           </div>
-        ) : (
-          <div className="text-center py-16 space-y-2">
-            <p className="text-slate-400 font-medium">No se encontraron vinilos</p>
-            <p className="text-slate-600 text-xs">
-              Intenta cambiando los criterios de búsqueda o seleccionando otro género.
-            </p>
-          </div>
-        )}
-      </section>
+          <GenreFilter selectedGenre={selectedGenre} onSelectGenre={setSelectedGenre} />
+        </div>
+      </div>
+
+      {/* Grid de Resultados */}
+      {filteredAlbums.length === 0 ? (
+        <div className="text-center py-16 space-y-2">
+          <p className="text-slate-400 text-base">No se encontraron álbumes.</p>
+          <p className="text-slate-500 text-xs">Intenta con otro término de búsqueda o género.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {filteredAlbums.map((album) => (
+            <VinylCard key={album.id} album={album} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

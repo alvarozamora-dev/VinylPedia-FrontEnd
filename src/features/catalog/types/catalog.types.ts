@@ -22,3 +22,10 @@ export interface VinylAlbum {
 export interface VinylCardProps {
   album: VinylAlbum;
 }
+
+export interface CatalogFilters {
+  searchQuery: string;
+  selectedGenre: Genre;
+}
+
+export type Genre = 'Todos' | 'Rock Progresivo' | 'Heavy Metal' | 'Post-Hardcore' | 'Pop' | 'Jazz';
